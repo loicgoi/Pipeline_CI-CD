@@ -4,7 +4,6 @@ import logging
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import List
-import numpy as np
 from dotenv import load_dotenv
 
 from .model_loader import load_model
