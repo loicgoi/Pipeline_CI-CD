@@ -4,9 +4,11 @@ import logging
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import List
-import numpy as np
+from dotenv import load_dotenv
 
-from model_loader import load_model
+from .model_loader import load_model
+
+load_dotenv()
 
 # Configuration logs
 logging.basicConfig(level=logging.INFO)
@@ -46,11 +48,15 @@ def predict(request: PredictionRequest):
     try:
         # Validation de l'input
         if len(request.features) != 4:
-            raise HTTPException(status_code=400, detail="Exactement 4 fonctionnalités requises")
+            raise HTTPException(status_code=400, detail="Exactement 4 éléments requis")
         
-        features_array = np.array([request.features])
-        prediction = model.predict(features_array)[0]
-        probabilities = model.predict_proba(features_array)[0].tolist()
+        features = [request.features]
+
+        pred_raw = model.predict(features)
+        proba_raw = model.predict_proba(features)
+
+        prediction = int(pred_raw[0])
+        probabilities = list(proba_raw[0])
 
         species_names = ["setosa", "versicolor", "virginica"]
         species = species_names[prediction]
@@ -67,4 +73,4 @@ def predict(request: PredictionRequest):
         raise HTTPException(status_code=500, detail=f"Prédiction échouée: {str(e)}")
     
 if __name__ == "__main__":
-    uvicorn.run(app, host="127.0.0.1", port=int(os.getenv("PORT", 8000)))
+    uvicorn.run(app, host=str(os.getenv("API_URL", "127.0.0.10")), port=int(os.getenv("API_PORT", 8100)))
