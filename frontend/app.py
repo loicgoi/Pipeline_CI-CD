@@ -1,3 +1,16 @@
+"""
+Application Streamlit de démonstration pour la prédiction d'espèce d'Iris.
+
+Cette interface web permet à l'utilisateur d'ajuster interactivement les 4 caractéristiques
+morphologiques d'une fleur d'Iris (longueur/largeur des sépales et pétales) via des sliders
+et des champs numériques synchronisés, puis d'appeler l'API FastAPI de prédiction
+( endpoint `/predict` ) pour obtenir l'espèce prédite et les probabilités associées.
+
+Variables d'environnement utilisées :
+- ``API_URL`` : adresse du serveur backend (défaut : 127.0.0.1)
+- ``API_PORT`` : port du serveur backend (défaut : 8100)
+"""
+
 import streamlit as st
 import requests
 import os
@@ -15,6 +28,22 @@ backend_url = f"http://{api_url}:{api_port}"
 
 # Fonction slider + input synchronisés
 def synced_input(label: str, min_val: float, max_val: float, default: float, step: float = 0.1, key: str = None):
+    """Crée un slider et un champ numérique synchronisés dans Streamlit.
+
+    Les deux widgets partagent la même valeur via ``st.session_state``. 
+    Modifier l'un met instantanément à jour l'autre.
+
+    Args:
+        label (str): Libellé affiché pour le slider (le number_input est masqué).
+        min_val (float): Valeur minimale autorisée.
+        max_val (float): Valeur maximale autorisée.
+        default (float): Valeur initiale.
+        step (float): Pas d'incrémentation (défaut = 0.1).
+        key (str | None): Préfixe unique pour les clés dans ``session_state``.
+
+    Returns:
+        float: La valeur courante (commune aux deux widgets).
+    """
     slider_key = f"{key}_slider"
     input_key = f"{key}_input"
 
