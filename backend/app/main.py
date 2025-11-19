@@ -107,7 +107,17 @@ def predict(request: PredictionRequest):
 
 # Lancement du serveur  
 if __name__ == "__main__":
-    host = str(os.getenv("API_HOST", "127.0.0.1"))
-    port = int(os.getenv("API_PORT", 8100))
-    LOG.info(f"Démarrage du serveur sur http://{host}:{port}")
-    uvicorn.run(app, host=host, port=port, reload=True)
+    # Valeurs par défaut si la variable n’existe pas
+    host = os.getenv("API_URL", "127.0.0.1")
+    port = int(os.getenv("API_PORT", "8100"))
+
+    LOG.info(f"Démarrage de l'API → http://{host}:{port}")
+    LOG.info("(modifie API_URL / API_PORT dans le fichier .env pour changer)")
+
+    uvicorn.run(
+        "app.main:app",
+        host=host,
+        port=port,
+        reload=True,
+        log_level="info"
+    )
