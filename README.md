@@ -1,11 +1,10 @@
 # Pipeline CI/CD avec FastAPI, Streamlit, Docker et Azure
 
-![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.104.1-green.svg)
-![Streamlit](https://img.shields.io/badge/Streamlit-1.28.0-red.svg)
-![Docker](https://img.shields.io/badge/Docker-24.0-cyan.svg)
+![Python](https://img.shields.io/badge/Python-3.12+-blue.svg)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.121.2-green.svg)
+![Streamlit](https://img.shields.io/badge/Streamlit-1.51.0-red.svg)
+![Docker](https://img.shields.io/badge/Docker-4.49-cyan.svg)
 ![Azure](https://img.shields.io/badge/Azure-Cloud-0078D4.svg)
-![MLflow](https://img.shields.io/badge/MLflow-2.9.2-orange.svg)
 
 ## Table des matières
 
