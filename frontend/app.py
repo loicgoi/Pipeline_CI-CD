@@ -22,9 +22,7 @@ st.title("Prédiction d'espèce Iris")
 st.markdown("Ajustez les caractéristiques morphologiques et cliquez sur **Prédire l'espèce**")
 
 # URL du backend
-api_url = os.getenv("API_URL", "127.0.0.1")
-api_port = os.getenv("API_PORT", "8100")
-backend_url = f"http://{api_url}:{api_port}"
+backend_url = os.getenv("BACKEND_URL", "http://127.0.0.1:8100")
 
 # Fonction slider + input synchronisés
 def synced_input(label: str, min_val: float, max_val: float, default: float, step: float = 0.1, key: str = None):
