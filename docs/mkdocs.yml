@@ -1,0 +1,11 @@
+site_name: Pipeline CI/CD
+nav:
+  - Accueil: index.md
+  - API: api.md
+  - Frontend: frontend.md
+  - Docker: docker.md
+  - CI/CD: cicd.md
+  - Déploiement Azure: azure.md
+theme: material
+plugins:
+  - search
