@@ -23,7 +23,7 @@ jobs:
     - name: Install dependencies
       run: |
         pip install -r backend/requirements.txt
-        pip install pytest mkdocs
+        pip install pytest mkdocs mkdocs-material
     
     - name: Run tests
       run: |
