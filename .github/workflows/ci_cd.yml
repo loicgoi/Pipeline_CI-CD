@@ -1,0 +1,61 @@
+name: Pipeline CI/CD
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  ci-cd:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+    
+    - name: Install dependencies
+      run: |
+        pip install -r backend/requirements.txt
+        pip install pytest mkdocs
+    
+    - name: Run tests
+      run: |
+        cd backend
+        pytest tests/ -v
+    
+    - name: Deploy docs
+      run: |
+        cd docs
+        git config --global user.name 'github-actions'
+        git config --global user.email 'github-actions@github.com'
+        mkdocs gh-deploy --force
+    
+    - name: Train model
+      run: |
+        cd backend
+        python ml/train.py
+    
+    - name: Login to DockerHub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+    
+    - name: Build and push backend
+      run: |
+        cd backend
+        docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/iris-backend:latest .
+        docker push ${{ secrets.DOCKERHUB_USERNAME }}/iris-backend:latest
+    
+    - name: Build and push frontend
+      run: |
+        cd frontend
+        docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/iris-frontend:latest .
+        docker push ${{ secrets.DOCKERHUB_USERNAME }}/iris-frontend:latest
