@@ -19,6 +19,7 @@ import logging
 import pickle
 import dotenv
 
+from azureml.core import Workspace, Experiment, Model
 import mlflow
 import mlflow.sklearn
 from sklearn.metrics import accuracy_score
@@ -45,7 +46,9 @@ def get_model_dir():
 
 def main():
     """Fonction principale : entraînement et sauvegarde du modèle Iris."""
-    tracking_uri = os.getenv("MLFLOW_TRACKING_URI", "sqlite:///../mlflow.db")
+    ws = Workspace.from_config(path="../config.json")
+
+    tracking_uri = os.getenv(ws.get_mlflow_tracking_uri(), "MLFLOW_TRACKING_URI")
     if tracking_uri:
         mlflow.set_tracking_uri(tracking_uri)
         LOG.info(f"URI de suivi MLflow défini sur {tracking_uri}")
@@ -80,8 +83,9 @@ def main():
             pickle.dump(rfc, f)
         LOG.info(f"Modèle sauvegardé dans {out_path}")
 
-        # Enregistrement dans MLflow également
-        mlflow.log_artifact(out_path, artifact_path="model")
+        # Enregistrement manuel dans MLflow pour éviter certaines erreurs
+        mlflow.log_metric("accuracy", acc)
+        mlflow.log_artifact(str(out_path), artifact_path="model")
 
 
 if __name__ == "__main__":
