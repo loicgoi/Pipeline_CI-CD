@@ -24,6 +24,7 @@ except Exception as e:
     LOG.error(f"Chargement du modèle échoué: {e}")
     model = None
 
+
 # Modèles Pydantic
 class PredictionRequest(BaseModel):
     """Requête pour effectuer une prédiction.
@@ -35,7 +36,9 @@ class PredictionRequest(BaseModel):
             3. petal length (cm)
             4. petal width (cm)
     """
+
     features: List[float]
+
 
 class PredictionResponse(BaseModel):
     """Réponse renvoyée par l'endpoint de prédiction.
@@ -45,14 +48,17 @@ class PredictionResponse(BaseModel):
         species (str): Nom lisible de l'espèce prédite.
         probabilities (Dict[str, float]): Probabilités pour chaque classe (arrondies à 4 décimales).
     """
+
     prediction: int
     species: str
     probabilities: Dict[str, float]
+
 
 @app.get("/")
 def health_check():
     """Retourne le statut de l'API et indique si le modèle est chargé."""
     return {"status": "ok", "model_loader": model is not None}
+
 
 @app.post("/predict", response_model=PredictionResponse)
 def predict(request: PredictionRequest):
@@ -72,11 +78,13 @@ def predict(request: PredictionRequest):
 
     if model is None:
         raise HTTPException(status_code=500, detail="Modèle non chargé")
-    
+
     try:
         if len(request.features) != 4:
-            raise HTTPException(status_code=400, detail="Exactement 4 caractéristiques requises")
-        
+            raise HTTPException(
+                status_code=400, detail="Exactement 4 caractéristiques requises"
+            )
+
         # Préparation des données pour le modèle (batch de taille 1)
         features = [request.features]
 
@@ -89,23 +97,22 @@ def predict(request: PredictionRequest):
         species = species_names[prediction]
 
         # Normalisation et arrondi des probabilités
-        probs_np = proba_raw.flatten() if hasattr(proba_raw, 'flatten') else proba_raw
+        probs_np = proba_raw.flatten() if hasattr(proba_raw, "flatten") else proba_raw
         probs_list = [float(p) for p in probs_np]
         probabilities = dict(zip(species_names, [round(p, 4) for p in probs_list]))
 
         LOG.info(f"Prédiction: {species} → {probabilities}")
 
         return PredictionResponse(
-            prediction=prediction,
-            species=species,
-            probabilities=probabilities
+            prediction=prediction, species=species, probabilities=probabilities
         )
 
     except Exception as e:
         LOG.error(f"Erreur de Prédiction: {e}")
         raise HTTPException(status_code=500, detail=f"Prédiction échouée: {str(e)}")
 
-# Lancement du serveur  
+
+# Lancement du serveur
 if __name__ == "__main__":
     # Valeurs par défaut si la variable n’existe pas
     host = os.getenv("API_URL", "127.0.0.1")
@@ -114,10 +121,4 @@ if __name__ == "__main__":
     LOG.info(f"Démarrage de l'API → http://{host}:{port}")
     LOG.info("(modifie API_URL / API_PORT dans le fichier .env pour changer)")
 
-    uvicorn.run(
-        "app.main:app",
-        host=host,
-        port=port,
-        reload=True,
-        log_level="info"
-    )
+    uvicorn.run("app.main:app", host=host, port=port, reload=True, log_level="info")
