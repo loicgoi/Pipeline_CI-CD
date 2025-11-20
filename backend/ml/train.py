@@ -45,7 +45,7 @@ def get_model_dir():
 
 def main():
     """Fonction principale : entraînement et sauvegarde du modèle Iris."""
-    tracking_uri = os.getenv("MLFLOW_TRACKING_URI", None)
+    tracking_uri = os.getenv("MLFLOW_TRACKING_URI", "sqlite:///../mlflow.db")
     if tracking_uri:
         mlflow.set_tracking_uri(tracking_uri)
         LOG.info(f"URI de suivi MLflow défini sur {tracking_uri}")
