@@ -19,7 +19,7 @@ import logging
 import pickle
 import dotenv
 
-from azureml.core import Workspace, Experiment, Model
+from azureml.core import Workspace, Model
 import mlflow
 import mlflow.sklearn
 from sklearn.metrics import accuracy_score
@@ -86,6 +86,14 @@ def main():
         # Enregistrement manuel dans MLflow pour éviter certaines erreurs
         mlflow.log_metric("accuracy", acc)
         mlflow.log_artifact(str(out_path), artifact_path="model")
+
+        # Enregistrer le modèle dans Azure ML
+        model_azure = Model.register(
+            workspace=ws,
+            model_path=str(out_path),
+            model_name="iris_model"
+        )
+        LOG.info(f"Modèle enregistré : {model_azure.name} ({model_azure.id})")
 
 
 if __name__ == "__main__":
