@@ -65,19 +65,23 @@ def main():
 
     mlflow.set_experiment("iris-demo")
 
-    mlflow.sklearn.autolog()  # type: ignore
-    rfc = RandomForestClassifier(
-        n_estimators=100, max_depth=10, oob_score=True, random_state=42
-    )
-    rfc.fit(X_train, y_train)
-    preds = rfc.predict(X_test)
-    acc = accuracy_score(y_test, preds)
-    LOG.info(f"Test accuracy: {acc:.4f}")
+    with mlflow.start_run(run_name="train-iris-model"):
+        mlflow.sklearn.autolog()  # type: ignore
+        rfc = RandomForestClassifier(
+            n_estimators=100, max_depth=10, oob_score=True, random_state=42
+        )
+        rfc.fit(X_train, y_train)
+        preds = rfc.predict(X_test)
+        acc = accuracy_score(y_test, preds)
+        LOG.info(f"Test accuracy: {acc:.4f}")
 
-    out_path = model_dir / "model.pkl"
-    with open(out_path, "wb") as f:
-        pickle.dump(rfc, f)
-    LOG.info(f"Modèle sauvegardé dans {out_path}")
+        out_path = model_dir / "model.pkl"
+        with open(out_path, "wb") as f:
+            pickle.dump(rfc, f)
+        LOG.info(f"Modèle sauvegardé dans {out_path}")
+
+        # Enregistrement dans MLflow également
+        mlflow.log_artifact(out_path, artifact_path="model")
 
 
 if __name__ == "__main__":
